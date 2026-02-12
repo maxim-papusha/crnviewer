@@ -10,26 +10,42 @@ name = "crnviewer"
 version = "0.0.0a0"
 readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
+license-files = [
+  "LICENSE",
+  "THIRD_PARTY_NOTICES.md",
+  "src/crnviewer/static/*LICENSE*.txt",
+]
 
 description = "Viewer utilities for chemical reaction networks (CRN)"
 keywords = ["chemistry", "visualization", "crn", "viewer"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
 
 dependencies = [
-  "stereomolgraph",
+  "anywidget",
   "ipywidgets",
-  "ipycytoscape",
   "ipykernel",
   "py3dmol",
 ]
 
 [project.optional-dependencies]
+stereo = [
+  "stereomolgraph",
+]
 dev = [
   "pytest",
   "ruff",
+  "marimo",
 ]
 
 [tool.ruff.lint]
 select = ["E", "F", "UP035"]
 
 [tool.setuptools.package-data]
-crnviewer = ["static/*.js", "static/LICENSE*.txt"]
+crnviewer = ["static/*.js", "static/*LICENSE*.txt"]

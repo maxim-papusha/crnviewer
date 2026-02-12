@@ -6,6 +6,7 @@ import uuid
 from typing import Any, Mapping
 
 from .ipython import CyBuilder
+from .state import cybuilder_state
 
 
 def _read_static_text(name: str) -> str:
@@ -37,55 +38,40 @@ def cybuilder_html(
     when ``None``).
     """
 
-    node_defs, edge_defs = builder.elements()
-    graph_json = json.dumps({"nodes": node_defs, "edges": edge_defs})
-    style_json = json.dumps(list(CyBuilder.default_stylesheet))
+    state = cybuilder_state(
+        builder,
+        layout=layout,
+        layout_options=layout_options,
+        stylesheet=list(CyBuilder.default_stylesheet),
+    )
+    return state_html(state, pixel_ratio=pixel_ratio)
 
-    layout_config: dict[str, Any]
-    if layout == "layered":
-        layout_config = {
-            "name": "elk",
+
+def state_html(
+    state: Mapping[str, Any],
+    *,
+    pixel_ratio: float | None = 3.0,
+) -> str:
+    elements = state.get("elements", {"nodes": [], "edges": []})
+    style = state.get("style", list(CyBuilder.default_stylesheet))
+    layout_config = state.get(
+        "layout",
+        {
+            "name": "cose",
             "nodeDimensionsIncludeLabels": True,
             "animate": False,
-            "elk": {"algorithm": "layered"},
-        }
-    else:
-        layout_config = {
-            "name": layout,
-            "nodeDimensionsIncludeLabels": True,
-            "animate": False,
-        }
+        },
+    )
 
-    if layout_options:
-        if layout_config["name"] == "elk":
-            elk_opts = layout_config.setdefault("elk", {})
-            for key, value in layout_options.items():
-                if not isinstance(key, str):
-                    layout_config[key] = value
-                    continue
-
-                if key.startswith("elk."):
-                    stripped = key.removeprefix("elk.")
-                    elk_opts[stripped] = value
-                elif key.startswith("elk:"):
-                    stripped = key.removeprefix("elk:")
-                    elk_opts[stripped] = value
-                elif key.startswith("layered."):
-                    elk_opts[key] = value
-                elif key in {"algorithm", "direction", "edgeRouting"}:
-                    elk_opts[key] = value
-                else:
-                    layout_config[key] = value
-        else:
-            layout_config.update(layout_options)
-
-    layout_json = json.dumps(layout_config)
+    graph_json = json.dumps(dict(elements))
+    style_json = json.dumps(list(style))
+    layout_json = json.dumps(dict(layout_config))
     container_id = f"cy-{uuid.uuid4().hex}"
 
     cytoscape_js = _read_static_text("cytoscape.min.js")
 
     scripts: list[str] = ["<script>" + cytoscape_js + "</script>"]
-    chosen_layout = layout_config.get("name", layout)
+    chosen_layout = str(layout_config.get("name", "cose"))
 
     if chosen_layout == "elk":
         elk_js = _read_static_text("elk.bundled.js")

@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import base64
+import html as html_lib
+import os
 from collections import defaultdict
 from collections.abc import Hashable, Iterable, Mapping
 from types import MappingProxyType
 from typing import Any, Callable, ClassVar, Generic, Literal, Protocol, TypeVar
+
+from .state import cybuilder_state
 
 R = TypeVar("R", bound=Hashable)
 S = TypeVar("S", bound=Hashable)
@@ -180,7 +184,10 @@ class CyBuilder(Generic[R, S]):
 def _make_image(renderer: Any, obj: Hashable) -> str | None:
     if renderer is None or not hasattr(renderer, "svg"):
         return None
-    svg = renderer.svg(obj)  # type: ignore[arg-type]
+    try:
+        svg = renderer.svg(obj)  # type: ignore[arg-type]
+    except Exception:
+        return None
     return CyBuilder._svg_data_uri(svg)
 
 
@@ -281,6 +288,32 @@ def container_elements(
     return builder.elements()
 
 
+def container_state(
+    container: ReactionContainerLike[R, S],
+    *,
+    view: Any | None = None,
+    label_func: Callable[[Hashable], str] | None = None,
+    skip_species: Iterable[S] | None = None,
+    skip_reactions: Iterable[R] | None = None,
+    layout: str = "cose",
+    layout_options: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return a lightweight JSON-like state object for Cytoscape renderers."""
+
+    builder = build_builder_from_container(
+        container,
+        view=view,
+        label_func=label_func,
+        skip_species=skip_species,
+        skip_reactions=skip_reactions,
+    )
+    return cybuilder_state(
+        builder,
+        layout=layout,
+        layout_options=layout_options,
+    )
+
+
 def display_crg_container_with_images(
     container: ReactionContainerLike[R, S],
     *,
@@ -326,16 +359,15 @@ def display_container_widget(
     skip_reactions: Iterable[R] | None = None,
     height: str = "700px",
     width: str = "100%",
+    backend: Literal["auto", "anywidget", "html"] = "auto",
 ):
-    """Display a reaction container using ipycytoscape if available.
+    """Display a reaction container.
 
-    Falls back to `display_container` (HTML iframe) when ipycytoscape is not
-    installed.
+    ``backend='auto'`` prefers anywidget except in VS Code notebook sessions,
+    where HTML iframe fallback is used for reliability.
     """
 
-    import ipycytoscape as cy  # type: ignore
-
-    nodes, edges = container_elements(
+    state = container_state(
         container,
         view=view,
         label_func=label_func,
@@ -343,11 +375,23 @@ def display_container_widget(
         skip_reactions=skip_reactions,
     )
 
-    graph = {"nodes": nodes, "edges": edges}
-    widget = cy.CytoscapeWidget()
-    widget.graph.add_graph_from_json(graph)
-    widget.set_style(list(CyBuilder.default_stylesheet))
-    widget.set_layout(**dict(CyBuilder.layout))
-    widget.layout.height = height
-    widget.layout.width = width
-    return widget
+    chosen_backend = backend
+    if backend == "auto":
+        chosen_backend = "html" if os.environ.get("VSCODE_PID") else "anywidget"
+
+    if chosen_backend == "html":
+        from ipywidgets import HTML
+
+        from .html import state_html
+
+        document = state_html(state)
+        escaped = html_lib.escape(document, quote=True)
+        iframe = (
+            f"<iframe style='width:{width};height:{height};border:0;' "
+            f"sandbox='allow-scripts allow-downloads' srcdoc=\"{escaped}\"></iframe>"
+        )
+        return HTML(value=iframe)
+
+    from .anywidget_view import CytoscapeAnyWidget
+
+    return CytoscapeAnyWidget(state=state, height=height, width=width)

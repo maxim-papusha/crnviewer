@@ -64,4 +64,4 @@ def test_cybuilder_html_contains_download_button(phos_like_container):
     assert "download-btn" in html
     assert "Download with Positions" in html
     assert "cloneNode(true)" in html
-    assert 'const layoutCfg = { name: "preset" };' in html
+    assert '{ \"name\": \"preset\" }' in html
