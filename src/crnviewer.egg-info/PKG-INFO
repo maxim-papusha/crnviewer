@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: crnviewer
+Version: 0.0.0a0
+Summary: Viewer utilities for chemical reaction networks (CRN)
+Keywords: chemistry,visualization,crn,viewer
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: stereomolgraph
+Requires-Dist: ipywidgets
+Requires-Dist: ipycytoscape
+Requires-Dist: ipykernel
+Requires-Dist: py3dmol
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+
+# crnviewer
+
+Minimal viewer utilities for chemical reaction networks.
+
+This package is a small workspace-local package scaffold created to host CRN visualization tools.

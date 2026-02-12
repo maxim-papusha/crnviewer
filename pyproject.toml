@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[project]
+name = "crnviewer"
+version = "0.0.0a0"
+readme = "README.md"
+requires-python = ">=3.10"
+
+description = "Viewer utilities for chemical reaction networks (CRN)"
+keywords = ["chemistry", "visualization", "crn", "viewer"]
+
+dependencies = [
+  "stereomolgraph",
+  "ipywidgets",
+  "ipycytoscape",
+  "ipykernel",
+  "py3dmol",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "ruff",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "UP035"]
+
+[tool.setuptools.package-data]
+crnviewer = ["static/*.js", "static/LICENSE*.txt"]

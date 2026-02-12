@@ -1,0 +1,9 @@
+stereomolgraph
+ipywidgets
+ipycytoscape
+ipykernel
+py3dmol
+
+[dev]
+pytest
+ruff

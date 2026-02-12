@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>CRN sample (no cola)</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #cy { width: 100vw; height: 100vh; display: block; }
+  </style>
+  <!-- Load local Cytoscape bundle (no cola) -->
+  <script src="src/crnviewer/static/cytoscape.js"></script>
+</head>
+<body>
+  <div id="cy"></div>
+
+  <script>
+    // Sample elements
+    const elements = {
+      nodes: [
+        { data: { id: 'a', label: 'A' } },
+        { data: { id: 'b', label: 'B' } },
+        { data: { id: 'c', label: 'C' } }
+      ],
+      edges: [
+        { data: { id: 'ab', source: 'a', target: 'b' } },
+        { data: { id: 'bc', source: 'b', target: 'c' } }
+      ]
+    };
+
+    // Basic stylesheet
+    const stylesheet = [
+      {
+        selector: 'node',
+        style: {
+          'background-color': '#61bffc',
+          'label': 'data(label)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'width': 40,
+          'height': 40,
+          'font-size': 12,
+          'color': '#000'
+        }
+      },
+      {
+        selector: 'edge',
+        style: {
+          'width': 2,
+          'line-color': '#888',
+          'target-arrow-shape': 'triangle',
+          'target-arrow-color': '#888',
+          'curve-style': 'bezier'
+        }
+      }
+    ];
+
+    // Use a built-in layout (grid) since cola is not included
+    const cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements: elements,
+      style: stylesheet,
+      layout: { name: 'grid', rows: 1 }
+    });
+
+  </script>
+</body>
+</html>
