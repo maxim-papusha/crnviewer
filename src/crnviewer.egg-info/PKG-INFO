@@ -5,6 +5,7 @@ Summary: Viewer utilities for chemical reaction networks (CRN)
 Keywords: chemistry,visualization,crn,viewer
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
+License-File: LICENSE
 Requires-Dist: stereomolgraph
 Requires-Dist: ipywidgets
 Requires-Dist: ipycytoscape
@@ -13,6 +14,7 @@ Requires-Dist: py3dmol
 Provides-Extra: dev
 Requires-Dist: pytest; extra == "dev"
 Requires-Dist: ruff; extra == "dev"
+Dynamic: license-file
 
 # crnviewer
 

@@ -1,3 +1,4 @@
+LICENSE
 README.md
 pyproject.toml
 src/crnviewer/__init__.py
@@ -17,6 +18,7 @@ src/crnviewer/static/LICENSE-cytoscape-js.txt
 src/crnviewer/static/LICENSE-cytoscape-klay.txt
 src/crnviewer/static/LICENSE-elkjs.txt
 src/crnviewer/static/LICENSE-klayjs.txt
+src/crnviewer/static/LICENSE-webcola.txt
 src/crnviewer/static/__init__.py
 src/crnviewer/static/cytoscape-cose-bilkent.js
 src/crnviewer/static/cytoscape-elk.js
