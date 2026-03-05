@@ -31,7 +31,6 @@ dependencies = [
   "anywidget",
   "ipywidgets",
   "ipykernel",
-  "py3dmol",
 ]
 
 [project.optional-dependencies]
@@ -41,7 +40,6 @@ stereo = [
 dev = [
   "pytest",
   "ruff",
-  "marimo",
 ]
 
 [tool.ruff.lint]

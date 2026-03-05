@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import html as html_lib
 import os
+import uuid
 from collections import defaultdict
 from collections.abc import Hashable, Iterable, Mapping
 from types import MappingProxyType
@@ -386,10 +387,33 @@ def display_container_widget(
 
         document = state_html(state)
         escaped = html_lib.escape(document, quote=True)
-        iframe = (
-            f"<iframe style='width:{width};height:{height};border:0;' "
-            f"sandbox='allow-scripts allow-downloads' srcdoc=\"{escaped}\"></iframe>"
-        )
+        iframe_id = f"crnviewer-frame-{uuid.uuid4().hex}"
+        auto_height = str(height).strip() == "700px"
+
+        if auto_height:
+            iframe = (
+                f"<iframe id='{iframe_id}' style='width:{width};min-height:320px;height:100vh;border:0;' "
+                f"sandbox='allow-scripts allow-downloads' srcdoc=\"{escaped}\"></iframe>"
+                "<script>(function(){"
+                f"const frame=document.getElementById('{iframe_id}');"
+                "if(!frame){return;}"
+                "const resize=function(){"
+                "const rect=frame.getBoundingClientRect();"
+                "const top=Math.max(0,rect.top);"
+                "const bottomPadding=12;"
+                "const h=Math.max(320,window.innerHeight-top-bottomPadding);"
+                "frame.style.height=h+'px';"
+                "};"
+                "window.addEventListener('resize',resize,{passive:true});"
+                "requestAnimationFrame(resize);"
+                "setTimeout(resize,60);"
+                "})();</script>"
+            )
+        else:
+            iframe = (
+                f"<iframe id='{iframe_id}' style='width:{width};height:{height};border:0;' "
+                f"sandbox='allow-scripts allow-downloads' srcdoc=\"{escaped}\"></iframe>"
+            )
         return HTML(value=iframe)
 
     from .anywidget_view import CytoscapeAnyWidget
