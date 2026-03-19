@@ -35,7 +35,7 @@ class CytoscapeAnyWidget(anywidget.AnyWidget):  # type: ignore[misc]
 
     state = traitlets.Dict(default_value={}).tag(sync=True)
     width = traitlets.Unicode("100%").tag(sync=True)
-    height = traitlets.Unicode("700px").tag(sync=True)
+    height = traitlets.Unicode("100%").tag(sync=True)
     selected_node_ids = traitlets.List(
         trait=traitlets.Unicode(),
         default_value=[],
@@ -48,7 +48,7 @@ class CytoscapeAnyWidget(anywidget.AnyWidget):  # type: ignore[misc]
         *,
         state: Mapping[str, Any],
         width: str = "100%",
-        height: str = "700px",
+        height: str = "100%",
     ) -> None:
         super().__init__()  # type: ignore[misc]
         self.state = dict(state)
